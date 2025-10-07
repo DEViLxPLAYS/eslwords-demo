@@ -303,6 +303,45 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_submissions: {
+        Row: {
+          counseling_mode: string | null
+          created_at: string
+          email: string | null
+          id: string
+          message: string | null
+          name: string
+          phone: string
+          preferred_country: string | null
+          preferred_study_level: string | null
+          service_type: string
+        }
+        Insert: {
+          counseling_mode?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          name: string
+          phone: string
+          preferred_country?: string | null
+          preferred_study_level?: string | null
+          service_type: string
+        }
+        Update: {
+          counseling_mode?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string
+          preferred_country?: string | null
+          preferred_study_level?: string | null
+          service_type?: string
+        }
+        Relationships: []
+      }
       faqs: {
         Row: {
           answer: string
