@@ -4,13 +4,14 @@ import { Link } from "react-router-dom";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, Star, CheckCircle, Mic, Award, Globe } from "lucide-react";
 import { BackgroundPaths } from "@/components/ui/background-paths";
+import { useRef } from "react";
 
 /* ─── helpers ─── */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.6, delay, ease: "easeOut" as const },
 });
 
 function use3DTilt() {
@@ -51,6 +52,68 @@ function Card3D({ icon: Icon, title, desc, gradient, delay }: {
   );
 }
 
+/* cursor-reactive photo card */
+function CursorPhoto() {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 200, damping: 28 });
+  const sy = useSpring(y, { stiffness: 200, damping: 28 });
+  const rotateY = useTransform(sx, [-0.5, 0.5], ["-12deg", "12deg"]);
+  const rotateX = useTransform(sy, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const shadowX = useTransform(sx, [-0.5, 0.5], ["-24px", "24px"]);
+  const shadowY = useTransform(sy, [-0.5, 0.5], ["-12px", "20px"]);
+  const shadow = useTransform(
+    [shadowX, shadowY],
+    ([sx, sy]) => `${sx} ${sy} 60px rgba(37,99,235,0.18)`
+  );
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = ref.current!.getBoundingClientRect();
+    x.set((e.clientX - r.left) / r.width - 0.5);
+    y.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const onLeave = () => { x.set(0); y.set(0); };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      initial={{ opacity: 0, scale: 0.88 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      style={{ rotateX, rotateY, boxShadow: shadow, transformStyle: "preserve-3d", perspective: 900 }}
+      className="relative w-[320px] mx-auto cursor-none"
+    >
+      {/* Floating Band badge */}
+      <motion.div
+        animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        style={{ transform: "translateZ(36px)" }}
+        className="absolute -top-5 -right-8 z-20 bg-white rounded-2xl px-4 py-3 shadow-xl border border-slate-100"
+      >
+        <p className="text-2xl font-extrabold text-blue-600 leading-none">Band 9</p>
+        <p className="text-xs text-slate-400 mt-0.5">Top score achieved</p>
+      </motion.div>
+      {/* Floating 7 Days badge */}
+      <motion.div
+        animate={{ y: [0, 8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        style={{ transform: "translateZ(36px)" }}
+        className="absolute -bottom-4 -left-8 z-20 bg-blue-600 rounded-2xl px-4 py-3 shadow-xl"
+      >
+        <p className="text-2xl font-extrabold text-white leading-none">7 Days</p>
+        <p className="text-xs text-blue-200 mt-0.5">To fluency</p>
+      </motion.div>
+
+      <div style={{ transform: "translateZ(0px)" }}
+        className="rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
+        <img src="https://i.postimg.cc/3RxRGXVK/esl-words-ielts-speaking.webp"
+          alt="Miss Waffa" className="w-full object-cover aspect-[3/4]" />
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Index() {
   return (
     <div className="min-h-screen bg-white font-inter overflow-x-hidden">
@@ -58,10 +121,7 @@ export default function Index() {
 
       {/* ── HERO ── */}
       <BackgroundPaths>
-        <section className="min-h-screen flex items-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 pt-20">
-          {/* glows */}
-          <div className="absolute top-1/3 -left-40 w-[500px] h-[500px] bg-blue-600/25 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-500/15 rounded-full blur-[90px] pointer-events-none" />
+        <section className="min-h-screen flex items-center bg-white/60 pt-20">
 
           <div className="container mx-auto px-4 max-w-7xl py-20">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -70,9 +130,9 @@ export default function Index() {
               <div>
                 <motion.div
                   initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-400/30 bg-blue-500/10 text-blue-300 text-xs font-semibold mb-6 tracking-wider"
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold mb-6 tracking-wider"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                   IELTS SPEAKING EXPERT · CANADA
                 </motion.div>
 
@@ -80,7 +140,7 @@ export default function Index() {
                   <motion.h1 key={i}
                     initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.1 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                    className={`block text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] ${i === 1 ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400" : "text-white"
+                    className={`block text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] ${i === 1 ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500" : "text-slate-900"
                       }`}
                   >
                     {line}
@@ -88,7 +148,7 @@ export default function Index() {
                 ))}
 
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-                  className="text-slate-400 text-lg mt-6 mb-8 max-w-md">
+                  className="text-slate-500 text-lg mt-6 mb-8 max-w-md">
                   Miss Waffa — native English speaker &amp; IELTS expert. Achieve Band 7, 8, or 9 Online.
                 </motion.p>
 
@@ -99,7 +159,7 @@ export default function Index() {
                     Start Learning <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link to="/ielts-speaking"
-                    className="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold px-7 py-3.5 rounded-2xl transition-all">
+                    className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-slate-200 text-white font-semibold px-7 py-3.5 rounded-2xl transition-all">
                     View Course
                   </Link>
                 </motion.div>
@@ -109,43 +169,17 @@ export default function Index() {
                   <div className="flex -space-x-2">
                     {[11, 12, 13, 14].map(i => (
                       <img key={i} src={`https://i.pravatar.cc/80?img=${i}`} alt=""
-                        className="w-8 h-8 rounded-full border-2 border-slate-800 object-cover" />
+                        className="w-8 h-8 rounded-full border-2 border-white object-cover" />
                     ))}
                   </div>
-                  <p className="text-slate-400 text-sm"><strong className="text-white">2,000+</strong> students worldwide</p>
+                  <p className="text-slate-500 text-sm"><strong className="text-slate-900">2,000+</strong> students worldwide</p>
                 </motion.div>
               </div>
 
-              {/* Right — photo */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="hidden lg:block relative"
-              >
-                <div className="relative w-[340px] mx-auto">
-                  {/* Floating Band badge */}
-                  <motion.div
-                    animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -top-5 -right-8 z-20 bg-white rounded-2xl px-4 py-3 shadow-xl border border-slate-100"
-                  >
-                    <p className="text-2xl font-extrabold text-blue-600 leading-none">Band 9</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Top score achieved</p>
-                  </motion.div>
-                  {/* Floating 7 Days badge */}
-                  <motion.div
-                    animate={{ y: [0, 8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    className="absolute -bottom-4 -left-8 z-20 bg-blue-600 rounded-2xl px-4 py-3 shadow-xl"
-                  >
-                    <p className="text-2xl font-extrabold text-white leading-none">7 Days</p>
-                    <p className="text-xs text-blue-200 mt-0.5">To fluency</p>
-                  </motion.div>
-
-                  <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] border border-white/10">
-                    <img src="https://i.postimg.cc/3RxRGXVK/esl-words-ielts-speaking.webp"
-                      alt="Miss Waffa" className="w-full object-cover aspect-[3/4]" />
-                  </div>
-                </div>
-              </motion.div>
+              {/* Right — cursor-reactive photo */}
+              <div className="hidden lg:block">
+                <CursorPhoto />
+              </div>
             </div>
           </div>
         </section>
