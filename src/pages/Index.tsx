@@ -208,7 +208,7 @@ export default function Index() {
             <motion.div {...fadeUp()} className="relative">
               <div className="absolute -inset-3 bg-blue-50 rounded-[3rem] rotate-2 -z-10" />
               <div className="rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100">
-                <img src="/waffa-teaching.png" alt="Miss Waffa Teaching" className="w-full object-cover" />
+                <img src="https://i.postimg.cc/3RxRGXVK/esl-words-ielts-speaking.webp" alt="Miss Waffa" className="w-full object-cover" />
               </div>
             </motion.div>
 
