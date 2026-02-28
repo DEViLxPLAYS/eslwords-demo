@@ -56,7 +56,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-slate-100 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
-          <p>© {new Date().getFullYear()} ESL Words - Miss Waffa. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Miss Waffa. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -144,7 +144,7 @@ export default function Index() {
                   </p>
                   <div>
                     <h4 className="font-bold text-slate-900 text-lg">Miss Waffa</h4>
-                    <p className="text-blue-600 font-medium">Founder, ESL Words</p>
+                    <p className="text-blue-600 font-medium">IELTS Speaking Expert</p>
                   </div>
                 </div>
               </div>
@@ -156,7 +156,7 @@ export default function Index() {
                 </h2>
                 <div className="space-y-4 text-lg text-slate-600 leading-relaxed">
                   <p>
-                    Welcome to ESL Words! I am a native English speaker living in Canada for over 30 years and have been offering English speaking courses to students preparing for the IELTS exam for the past 8 years.
+                    Welcome to Miss Waffa's IELTS Speaking courses! I am a native English speaker living in Canada for over 30 years and have been offering English speaking courses to students preparing for the IELTS exam for the past 8 years.
                   </p>
                   <p>
                     I have a Masters in Teaching English as a Second Language from the University of Ottawa. I'm currently an English Professor at one of Canada's top colleges.
