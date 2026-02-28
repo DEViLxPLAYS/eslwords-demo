@@ -64,33 +64,6 @@ export default function Contact() {
                     </div>
                   </div>
                 </Card>
-
-                <Card className="p-6 card-hover">
-                  <div className="flex items-start space-x-4">
-                    <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-semibold text-lg mb-1">Website</h3>
-                      <p className="text-muted-foreground">www.themoonconsultant.com</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6 card-hover">
-                  <div className="flex items-start space-x-4">
-                    <Facebook className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-semibold text-lg mb-1">Social Media</h3>
-                      <a
-                        href="https://www.facebook.com/MoonConsultants"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        facebook.com/MoonConsultants
-                      </a>
-                    </div>
-                  </div>
-                </Card>
               </div>
 
               {/* Office Hours */}
@@ -123,9 +96,9 @@ export default function Contact() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </section >
 
 
-    </Layout>
+    </Layout >
   );
 }

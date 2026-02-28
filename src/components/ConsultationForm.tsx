@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Send } from "lucide-react";
 
-const WHATSAPP_NUMBER = "923100004068"; // +92 310 000 4068
+
 
 export function ConsultationForm() {
   const { toast } = useToast();
@@ -28,25 +28,11 @@ export function ConsultationForm() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const sendToWhatsApp = () => {
-    const message = `*New Consultation Request*\n\n` +
-      `*Name:* ${formData.name}\n` +
-      `*Phone:* ${formData.phone}\n` +
-      `${formData.email ? `*Email:* ${formData.email}\n` : ''}` +
-      `*Service:* ${formData.serviceType}\n` +
-      `${formData.preferredCountry ? `*Preferred Country:* ${formData.preferredCountry}\n` : ''}` +
-      `${formData.preferredStudyLevel ? `*Study Level:* ${formData.preferredStudyLevel}\n` : ''}` +
-      `${formData.counselingMode ? `*Counseling Mode:* ${formData.counselingMode}\n` : ''}` +
-      `${formData.message ? `*Message:* ${formData.message}` : ''}`;
 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim() || !formData.phone.trim() || !formData.serviceType) {
       toast({
         title: "Missing Information",
@@ -77,11 +63,8 @@ export function ConsultationForm() {
 
       toast({
         title: "Success!",
-        description: "Redirecting you to WhatsApp...",
+        description: "Your consultation request has been submitted successfully.",
       });
-
-      // Send to WhatsApp
-      sendToWhatsApp();
 
       // Reset form
       setFormData({
@@ -229,7 +212,7 @@ export function ConsultationForm() {
               <SelectItem value="online">Online</SelectItem>
               <SelectItem value="in-person">In-Person</SelectItem>
               <SelectItem value="phone">Phone Call</SelectItem>
-              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+
               <SelectItem value="email">Email</SelectItem>
             </SelectContent>
           </Select>
