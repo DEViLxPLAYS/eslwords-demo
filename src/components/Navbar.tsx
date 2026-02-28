@@ -6,20 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { name: "Home", path: "/" },
-  { name: "About Us", path: "/about" },
-  { name: "Study Destinations", path: "/destinations", submenu: [
-    { name: "Study in UK", path: "/uk" },
-    { name: "Study in China", path: "/china" },
-    { name: "Study in Kyrgyzstan", path: "/kyrgyzstan" },
-  ]},
-  { name: "Test Preparation", path: "/test-prep", submenu: [
-    { name: "IELTS", path: "/ielts" },
-    { name: "PTE", path: "/pte" },
-  ]},
-  { name: "Chinese Language", path: "/chinese-language" },
-  { name: "Success Stories", path: "/success-stories" },
-  { name: "Gallery", path: "/gallery" },
-  { name: "Contact", path: "/contact" },
+  { name: "IELTS Speaking", path: "/ielts-speaking" },
+  { name: "Blogs", path: "/blogs" },
+  { name: "Contact Us", path: "/contact" },
 ];
 
 export function Navbar() {
@@ -42,60 +31,50 @@ export function Navbar() {
 
   return (
     <nav
-      className={`fixed w-full z-40 transition-all duration-300 ${
-        scrolled ? "bg-card/95 backdrop-blur-md shadow-lg" : "bg-transparent"
-      }`}
+      className={`fixed w-full z-40 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-md shadow-sm py-2" : "bg-transparent py-4"
+        }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <img 
-              src="https://i.postimg.cc/cLtPjwnp/Gemini-Generated-Image-a1hrha1hrha1hrha.png" 
-              alt="Moon Consultant International" 
-              className="h-12 w-auto"
-            />
-            <span className="text-xl font-bold text-primary hidden md:block">
-              Moon Consultant
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex items-center h-16 relative">
+          {/* Logo Section */}
+          <Link to="/" className="flex items-center space-x-2 shrink-0">
+            <span className="text-2xl font-bold tracking-tight text-blue-900 group">
+              Miss<span className="text-blue-600 transition-colors">Waffa</span>
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden lg:flex items-center justify-center space-x-8 absolute left-1/2 -translate-x-1/2">
             {navLinks.map((link) => (
               <div key={link.name} className="relative group">
                 <Link
                   to={link.path}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    location.pathname === link.path
-                      ? "text-primary bg-primary/10"
-                      : "text-foreground hover:text-primary hover:bg-primary/5"
-                  }`}
+                  className={`text-sm font-semibold tracking-wide uppercase transition-all duration-300 ${location.pathname === link.path
+                    ? "text-blue-600"
+                    : "text-slate-700 hover:text-blue-600"
+                    }`}
                 >
                   {link.name}
                 </Link>
-                {link.submenu && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-card rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-border">
-                    {link.submenu.map((sublink) => (
-                      <Link
-                        key={sublink.name}
-                        to={sublink.path}
-                        className="block px-4 py-3 hover:bg-primary/10 hover:text-primary transition-colors first:rounded-t-lg last:rounded-b-lg"
-                      >
-                        {sublink.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+
               </div>
             ))}
+          </div>
+
+          {/* CTA / Right Aligned elements */}
+          <div className="hidden lg:flex items-center ml-auto">
+            <Link to="/contact">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 transition-transform hover:scale-105 shadow-md shadow-blue-500/20">
+                Start Learning
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden text-slate-800 ml-auto"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -111,36 +90,29 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-card border-t border-border overflow-hidden"
+            className="lg:hidden bg-white border-t border-slate-100 overflow-hidden shadow-lg"
           >
-            <div className="container mx-auto px-4 py-4 space-y-2">
+            <div className="px-4 py-6 space-y-4">
               {navLinks.map((link) => (
                 <div key={link.name}>
                   <Link
                     to={link.path}
-                    className={`block px-4 py-3 rounded-lg font-medium transition-all ${
-                      location.pathname === link.path
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-primary/10 hover:text-primary"
-                    }`}
+                    className={`block px-4 py-3 rounded-xl font-medium transition-all ${location.pathname === link.path
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                      }`}
                   >
                     {link.name}
                   </Link>
-                  {link.submenu && (
-                    <div className="ml-4 mt-2 space-y-1">
-                      {link.submenu.map((sublink) => (
-                        <Link
-                          key={sublink.name}
-                          to={sublink.path}
-                          className="block px-4 py-2 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors"
-                        >
-                          {sublink.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
+              <div className="pt-4 px-4">
+                <Link to="/contact" className="block w-full" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-6 shadow-md shadow-blue-500/20">
+                    Start Learning
+                  </Button>
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}
