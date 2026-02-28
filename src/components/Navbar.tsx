@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
@@ -17,9 +16,7 @@ export function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -30,93 +27,119 @@ export function Navbar() {
   }, [location.pathname]);
 
   return (
-    <nav
-      className={`fixed w-full z-40 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-md shadow-sm py-2" : "bg-transparent py-4"
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+          ? "bg-white/95 backdrop-blur-lg shadow-[0_1px_20px_rgba(0,0,0,0.08)] py-1"
+          : "bg-white/80 backdrop-blur-md py-2"
         }`}
     >
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center h-16 relative">
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-2 shrink-0">
-            <span className="text-2xl font-bold tracking-tight text-blue-900 group">
-              Miss<span className="text-blue-600 transition-colors">Waffa</span>
+      <div className="max-w-6xl mx-auto px-5">
+        <div className="flex items-center h-13 relative" style={{ height: "52px" }}>
+
+          {/* Logo */}
+          <Link to="/" className="shrink-0 flex items-center">
+            <span className="text-xl font-bold text-slate-900">
+              Miss<span className="text-blue-600">Waffa</span>
             </span>
           </Link>
 
-          {/* Desktop Navigation - Centered */}
-          <div className="hidden lg:flex items-center justify-center space-x-8 absolute left-1/2 -translate-x-1/2">
-            {navLinks.map((link) => (
-              <div key={link.name} className="relative group">
+          {/* Desktop Nav — Centered Absolutely */}
+          <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
                 <Link
+                  key={link.name}
                   to={link.path}
-                  className={`text-sm font-semibold tracking-wide uppercase transition-all duration-300 ${location.pathname === link.path
-                    ? "text-blue-600"
-                    : "text-slate-700 hover:text-blue-600"
+                  className={`relative px-3 py-1.5 text-[13px] font-medium tracking-wide rounded-full transition-all duration-200 ${isActive
+                      ? "text-blue-600"
+                      : "text-slate-500 hover:text-slate-900"
                     }`}
                 >
-                  {link.name}
+                  {isActive && (
+                    <motion.span
+                      layoutId="active-pill"
+                      className="absolute inset-0 bg-blue-50 rounded-full border border-blue-100"
+                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                    />
+                  )}
+                  <span className="relative z-10">{link.name}</span>
                 </Link>
-
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* CTA / Right Aligned elements */}
-          <div className="hidden lg:flex items-center ml-auto">
-            <Link to="/contact">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 transition-transform hover:scale-105 shadow-md shadow-blue-500/20">
-                Start Learning
-              </Button>
-            </Link>
-          </div>
+          {/* CTA Button */}
+          <Link
+            to="/contact"
+            className="hidden md:inline-flex ml-auto items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-semibold px-4 py-2 rounded-full transition-all duration-200 hover:shadow-md hover:shadow-blue-500/20 active:scale-95"
+          >
+            Start Learning
+          </Link>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden text-slate-800 ml-auto"
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden ml-auto p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={isOpen ? "x" : "menu"}
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </motion.span>
+            </AnimatePresence>
+          </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Dropdown */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-slate-100 overflow-hidden shadow-lg"
+            transition={{ duration: 0.2 }}
+            className="md:hidden overflow-hidden bg-white border-t border-slate-100"
           >
-            <div className="px-4 py-6 space-y-4">
-              {navLinks.map((link) => (
-                <div key={link.name}>
+            <div className="px-4 py-3 space-y-1 max-w-6xl mx-auto">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
                   <Link
+                    key={link.name}
                     to={link.path}
-                    className={`block px-4 py-3 rounded-xl font-medium transition-all ${location.pathname === link.path
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                    className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                       }`}
                   >
                     {link.name}
                   </Link>
-                </div>
-              ))}
-              <div className="pt-4 px-4">
-                <Link to="/contact" className="block w-full" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-6 shadow-md shadow-blue-500/20">
-                    Start Learning
-                  </Button>
+                );
+              })}
+              <div className="pt-2 pb-1">
+                <Link
+                  to="/contact"
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+                >
+                  Start Learning
                 </Link>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 }
