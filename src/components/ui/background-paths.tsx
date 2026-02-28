@@ -9,7 +9,7 @@ function FloatingPaths({ position }: { position: number }) {
             } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${152 - i * 5 * position
             } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${684 - i * 5 * position
             } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-        width: 0.5 + i * 0.03,
+        width: 0.8 + i * 0.05,
     }));
 
     return (
@@ -19,13 +19,13 @@ function FloatingPaths({ position }: { position: number }) {
                     <motion.path
                         key={path.id}
                         d={path.d}
-                        stroke="rgba(99,179,237,1)"
+                        stroke="rgba(59,130,246,1)"
                         strokeWidth={path.width}
-                        strokeOpacity={0.08 + path.id * 0.018}
-                        initial={{ pathLength: 0.3, opacity: 0.6 }}
+                        strokeOpacity={0.12 + path.id * 0.022}
+                        initial={{ pathLength: 0.3, opacity: 0.7 }}
                         animate={{
                             pathLength: 1,
-                            opacity: [0.3, 0.6, 0.3],
+                            opacity: [0.4, 0.75, 0.4],
                             pathOffset: [0, 1, 0],
                         }}
                         transition={{
