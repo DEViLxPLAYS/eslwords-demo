@@ -1,324 +1,440 @@
-import { Navbar as Navigation } from "@/components/Navbar";
+import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, PlayCircle, Star, GraduationCap, Clock, Award } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { ArrowRight, Star, CheckCircle, Mic, BookOpen, Award, Zap, Globe, Users } from "lucide-react";
+import { useRef, useState } from "react";
 
-export default function Index() {
-  const fadeIn = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    transition: { duration: 0.8 },
-    viewport: { once: true, margin: "-100px" }
+/* ─── helpers ─── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 32 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
+});
+
+/* 3-D tilt card hook */
+function use3DTilt() {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 300, damping: 30 });
+  const sy = useSpring(y, { stiffness: 300, damping: 30 });
+  const rotateX = useTransform(sy, [-0.5, 0.5], ["8deg", "-8deg"]);
+  const rotateY = useTransform(sx, [-0.5, 0.5], ["-8deg", "8deg"]);
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
+  const onLeave = () => { x.set(0); y.set(0); };
+  return { rotateX, rotateY, onMove, onLeave };
+}
 
-  const staggerContainer = {
-    initial: { opacity: 0 },
-    whileInView: { opacity: 1 },
-    transition: { staggerChildren: 0.2 },
-    viewport: { once: true, margin: "-100px" }
-  };
-
+/* ─── floating stat card ─── */
+function StatBadge({ value, label, color, delay }: { value: string; label: string; color: string; delay: number }) {
   return (
-    <div className="min-h-screen font-inter selection:bg-blue-100 selection:text-blue-900 bg-slate-50">
-      <Navigation />
-
-      <main>
-        {/* --- HERO SECTION --- */}
-        <section className="relative min-h-[90vh] flex items-center pt-24 pb-16 overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50/50 -z-10" />
-          <motion.div
-            className="absolute top-20 -left-20 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-20 -right-20 w-[30rem] h-[30rem] bg-indigo-400/10 rounded-full blur-3xl"
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.2, 0.4, 0.2],
-            }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          />
-
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <motion.div
-                className="max-w-2xl"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100/50 border border-blue-200 text-blue-800 text-sm font-semibold mb-6 shadow-sm">
-                  <span className="flex h-2 w-2 rounded-full bg-blue-600"></span>
-                  Learning English speaking has never been so quick and easy!
-                </div>
-
-                <h1 className="text-5xl lg:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6">
-                  Speak English <br className="hidden md:block" />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                    Fluently and Confidently
-                  </span> <br />
-                  for IELTS Speaking
-                </h1>
-
-                <p className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-xl">
-                  Boost your English vocabulary and perfect your pronunciation. Become fluent answering IELTS questions for speaking.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-14 px-8 text-lg font-semibold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1" asChild>
-                    <Link to="/contact">BECOME A CONFIDENT SPEAKER</Link>
-                  </Button>
-                  <Button size="lg" variant="outline" className="h-14 px-8 rounded-xl text-lg font-semibold border-slate-200 text-slate-700 hover:bg-slate-50 transition-all group" asChild>
-                    <Link to="/contact">
-                      <PlayCircle className="w-5 h-5 mr-2 text-blue-600 group-hover:scale-110 transition-transform" />
-                      Watch Intro
-                    </Link>
-                  </Button>
-                </div>
-
-                <div className="mt-10 flex items-center gap-4 text-sm font-medium text-slate-500">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center overflow-hidden">
-                        <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Student" />
-                      </div>
-                    ))}
-                  </div>
-                  <p>Trusted by <span className="text-slate-900 font-bold">2000+</span> students</p>
-                </div>
-              </motion.div>
-
-              {/* Hero Image / Graphic */}
-              <motion.div
-                className="relative lg:h-[600px] flex items-center justify-center"
-                initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-              >
-                <div className="relative w-full max-w-md aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl shadow-blue-900/20 border-8 border-white">
-                  <div className="absolute inset-0 bg-blue-100 animate-pulse"></div>
-                  <img
-                    src="https://i.postimg.cc/3RxRGXVK/esl-words-ielts-speaking.webp"
-                    alt="Miss Waffa Teaching IELTS Speaking"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border border-white/20">
-                      <div className="flex items-center gap-3 mb-1">
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      </div>
-                      <p className="text-sm font-semibold text-slate-800">"Scored Band 8 in just weeks!"</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- ABOUT SECTION --- */}
-        <section id="about" className="py-24 bg-white relative">
-          <div className="container mx-auto px-4 lg:px-8">
-            <motion.div
-              className="grid lg:grid-cols-2 gap-16 items-center"
-              {...fadeIn}
-            >
-              <div className="order-2 lg:order-1 relative">
-                <div className="absolute -inset-4 bg-slate-100 rounded-[3rem] -z-10 rotate-3"></div>
-                <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-slate-100">
-                  <QuoteIcon className="w-12 h-12 text-blue-100 mb-6" />
-                  <p className="text-xl leading-relaxed text-slate-700 italic mb-8">
-                    "I chose the English teaching profession because I remember the language barriers my parents faced when they arrived to Canada 36 years ago. Because of this, I decided to become an English language instructor to help other immigrants with similar challenges."
-                  </p>
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-lg">Miss Waffa</h4>
-                    <p className="text-blue-600 font-medium">IELTS Speaking Expert</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="order-1 lg:order-2 space-y-6">
-                <span className="text-blue-600 font-bold tracking-wider uppercase text-sm">Meet Your Instructor</span>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
-                  Asalaamu Alaykum, <br /> I'm Miss Waffa!
-                </h2>
-                <div className="space-y-4 text-lg text-slate-600 leading-relaxed">
-                  <p>
-                    Welcome to Miss Waffa's IELTS Speaking courses! I am a native English speaker living in Canada for over 30 years and have been offering English speaking courses to students preparing for the IELTS exam for the past 8 years.
-                  </p>
-                  <p>
-                    I have a Masters in Teaching English as a Second Language from the University of Ottawa. I'm currently an English Professor at one of Canada's top colleges.
-                  </p>
-                  <p className="font-medium text-slate-900 bg-blue-50 p-4 rounded-xl border border-blue-100">
-                    The IELTS speaking band 7 in 7 days course has helped hundreds of students become confident English speakers and achieve a band 7, 8, or 9.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* --- COURSE BENEFITS / PROBLEM AGITATION --- */}
-        <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
-          {/* Subtle background pattern */}
-          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
-
-          <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            <motion.div
-              className="text-center max-w-3xl mx-auto mb-16"
-              {...fadeIn}
-            >
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Become a confident English Speaker in 7 days!
-              </h2>
-              <p className="text-xl text-slate-300">
-                You dream of speaking English smoothly without hesitation, but feel stuck at a band 5 or 6 and want to learn lots of new words without feeling nervous.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="grid md:grid-cols-3 gap-8 mb-16"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-            >
-              {[
-                {
-                  icon: GraduationCap,
-                  title: "Speak Without Hesitation",
-                  desc: "Learn to express your thoughts clearly with no more trouble feeling anxious or scared every time you speak."
-                },
-                {
-                  icon: Award,
-                  title: "Score Band 7, 8, or 9",
-                  desc: "Get the job of your dreams in an English speaking country by achieving your target IELTS score."
-                },
-                {
-                  icon: CheckCircle2,
-                  title: "Perfect Pronunciation",
-                  desc: "Quickly improve your vocabulary and pronounce words correctly, not just for the test but for everyday life."
-                }
-              ].map((feature, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={{
-                    initial: { opacity: 0, y: 20 },
-                    whileInView: { opacity: 1, y: 0 }
-                  }}
-                  className="bg-white/5 border border-white/10 p-8 rounded-2xl backdrop-blur-sm hover:bg-white/10 transition-colors"
-                >
-                  <div className="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6 border border-blue-400/30">
-                    <feature.icon className="w-7 h-7 text-blue-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-                  <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            <motion.div className="text-center" {...fadeIn}>
-              <Button size="lg" id="take-course" className="bg-blue-600 hover:bg-blue-500 text-white rounded-full h-16 px-10 text-xl font-bold transition-all shadow-xl shadow-blue-600/20 hover:scale-105" asChild>
-                <Link to="/contact">TAKE THE COURSE NOW</Link>
-              </Button>
-              <p className="mt-4 text-slate-400 text-sm">Join 2000+ successful students today</p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* --- RECENT BLOGS HIGHLIGHTS --- */}
-        <section className="py-24 bg-slate-50">
-          <div className="container mx-auto px-4 lg:px-8">
-            <motion.div
-              className="flex justify-between items-end mb-12"
-              {...fadeIn}
-            >
-              <div className="max-w-2xl">
-                <span className="text-blue-600 font-bold tracking-wider uppercase text-sm mb-2 block">Knowledge Base</span>
-                <h2 className="text-4xl font-bold text-slate-900">Recent Blogs</h2>
-              </div>
-              <Link to="/blogs" className="hidden sm:flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors group">
-                View All Posts <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </motion.div>
-
-            <motion.div
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-            >
-              {[
-                {
-                  title: "IELTS Speaking Tips 2026: Strategies to Boost Your Band Score",
-                  excerpt: "Preparing for the IELTS Speaking Tips 2026 can feel overwhelming. Some advice promises to instantly boost your band score, while...",
-                  category: "Tips"
-                },
-                {
-                  title: "IELTS Speaking Part 3 Questions 2026: Answers to Score High",
-                  excerpt: "Are you preparing for the IELTS Speaking Part 3 Questions 2026 and finding them a bit challenging? Don't worry, you're...",
-                  category: "Part 3"
-                },
-                {
-                  title: "IELTS Speaking Barbecue Questions: Vocabulary & Answers",
-                  excerpt: "Preparing for IELTS Speaking Part 1? Recently, many students reported that examiners asked them barbecue questions. From favorite foods to...",
-                  category: "Vocabulary"
-                }
-              ].map((blog, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={{
-                    initial: { opacity: 0, y: 20 },
-                    whileInView: { opacity: 1, y: 0 }
-                  }}
-                  className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col h-full"
-                >
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full w-fit mb-4">
-                    {blog.category}
-                  </span>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors line-clamp-2">
-                    {blog.title}
-                  </h3>
-                  <p className="text-slate-600 leading-relaxed mb-6 flex-grow line-clamp-3">
-                    {blog.excerpt}
-                  </p>
-                  <div className="flex items-center text-blue-600 font-semibold mt-auto pt-4 border-t border-slate-100">
-                    Read Article <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            <div className="mt-10 text-center sm:hidden">
-              <Button variant="outline" className="w-full h-12 rounded-xl" asChild>
-                <Link to="/blogs">View All Posts</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-
-      </main>
-      <Footer />
-    </div>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      className={`absolute backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 shadow-xl ${color}`}
+    >
+      <p className="text-2xl font-extrabold leading-none">{value}</p>
+      <p className="text-xs font-medium opacity-80 mt-0.5">{label}</p>
+    </motion.div>
   );
 }
 
-// Simple Quote Icon SVG component
-function QuoteIcon(props: React.SVGProps<SVGSVGElement>) {
+/* ─── 3-D feature card ─── */
+function FeatureCard({ icon: Icon, title, desc, gradient, delay }: {
+  icon: React.ElementType; title: string; desc: string; gradient: string; delay: number;
+}) {
+  const { rotateX, rotateY, onMove, onLeave } = use3DTilt();
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z" />
-    </svg>
+    <motion.div {...fadeUp(delay)} style={{ perspective: 800 }}>
+      <motion.div
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+        className="bg-white rounded-3xl p-7 border border-slate-100 shadow-sm hover:shadow-xl transition-shadow cursor-default group h-full"
+      >
+        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-5 shadow-lg`}
+          style={{ transform: "translateZ(20px)" }}>
+          <Icon className="w-7 h-7 text-white" />
+        </div>
+        <h3 className="text-xl font-bold text-slate-900 mb-2" style={{ transform: "translateZ(10px)" }}>{title}</h3>
+        <p className="text-slate-500 text-sm leading-relaxed" style={{ transform: "translateZ(8px)" }}>{desc}</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ─── testimonial card ─── */
+function TestimonialCard({ name, country, band, quote, delay }: {
+  name: string; country: string; band: string; quote: string; delay: number;
+}) {
+  return (
+    <motion.div
+      {...fadeUp(delay)}
+      whileHover={{ y: -6 }}
+      className="bg-white rounded-3xl p-7 border border-slate-100 shadow-sm hover:shadow-xl transition-all flex flex-col gap-4"
+    >
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
+      </div>
+      <p className="text-slate-700 text-sm leading-relaxed italic flex-grow">"{quote}"</p>
+      <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+        <div>
+          <p className="font-semibold text-slate-900 text-sm">{name}</p>
+          <p className="text-xs text-slate-400">{country}</p>
+        </div>
+        <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full">
+          Band {band}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MAIN PAGE
+═══════════════════════════════════════════ */
+export default function Index() {
+  return (
+    <div className="min-h-screen bg-white font-inter overflow-x-hidden">
+      <Navbar />
+
+      {/* ── HERO ── */}
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        {/* animated bg blobs */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900" />
+        <motion.div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
+        <motion.div className="absolute bottom-10 right-0 w-[400px] h-[400px] bg-indigo-500/15 rounded-full blur-[80px]"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }} />
+        {/* grid texture */}
+        <div className="absolute inset-0 opacity-[0.04]"
+          style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
+
+        <div className="relative z-10 container mx-auto px-4 lg:px-8 max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center py-16">
+
+            {/* Left text */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-400/30 bg-blue-500/10 text-blue-300 text-xs font-semibold mb-6 tracking-wider"
+              >
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                ONLINE IELTS SPEAKING COURSE
+              </motion.div>
+
+              {/* Headline — word by word */}
+              <div className="mb-6 overflow-hidden">
+                {[
+                  { text: "Speak English", cls: "text-white" },
+                  { text: "Fluently.", cls: "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400" },
+                  { text: "Score Higher.", cls: "text-white" },
+                ].map((line, li) => (
+                  <motion.h1
+                    key={li}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.1 + li * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                    className={`text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] block ${line.cls}`}
+                  >
+                    {line.text}
+                  </motion.h1>
+                ))}
+              </div>
+
+              <motion.p
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.6 }}
+                className="text-slate-400 text-lg leading-relaxed max-w-lg mb-10"
+              >
+                Join Miss Waffa — native English speaker & IELTS expert from Canada — and achieve Band 7, 8, or 9 in just 7 days.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75, duration: 0.5 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
+                <Link to="/contact"
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-2xl transition-all hover:shadow-2xl hover:shadow-blue-600/30 hover:-translate-y-0.5 text-base">
+                  Start Learning Now <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link to="/ielts-speaking"
+                  className="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold px-8 py-4 rounded-2xl transition-all text-base">
+                  View Course Details
+                </Link>
+              </motion.div>
+
+              {/* Trust strip */}
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 0.5 }}
+                className="mt-10 flex items-center gap-5 text-sm text-slate-500"
+              >
+                <div className="flex -space-x-2">
+                  {[11, 12, 13, 14].map(i => (
+                    <img key={i} src={`https://i.pravatar.cc/80?img=${i}`} alt=""
+                      className="w-8 h-8 rounded-full border-2 border-slate-800 object-cover" />
+                  ))}
+                </div>
+                <p className="text-slate-400 text-sm"><strong className="text-white text-base">2,000+</strong> students taught worldwide</p>
+              </motion.div>
+            </div>
+
+            {/* Right — photo + floating cards */}
+            <div className="relative hidden lg:flex items-center justify-center h-[620px]">
+              {/* main photo card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.85, rotate: -4 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="relative w-[360px] h-[480px] rounded-[2.5rem] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] border border-white/10"
+              >
+                <img src="https://i.postimg.cc/3RxRGXVK/esl-words-ielts-speaking.webp"
+                  alt="Miss Waffa" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3">
+                    <p className="text-white font-bold text-sm">Miss Waffa</p>
+                    <p className="text-blue-300 text-xs">IELTS Speaking Expert · Canada 🇨🇦</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Floating stat badges */}
+              <StatBadge value="2,000+" label="Students Taught" color="bg-blue-600/90 text-white" delay={0.8}
+                {...{ className: "absolute -left-8 top-16" } as any} />
+              <div style={{ position: "absolute", left: "-2rem", top: "4rem" }}>
+                <StatBadge value="2,000+" label="Students Taught" color="bg-blue-600/90 text-white" delay={0.8} />
+              </div>
+              <div style={{ position: "absolute", right: "-1rem", top: "6rem" }}>
+                <StatBadge value="Band 9" label="Top Score Achieved" color="bg-white/95 text-slate-900" delay={1.0} />
+              </div>
+              <div style={{ position: "absolute", left: "-3rem", bottom: "7rem" }}>
+                <StatBadge value="7 Days" label="To Fluency" color="bg-indigo-600/90 text-white" delay={1.2} />
+              </div>
+              <div style={{ position: "absolute", right: "-2rem", bottom: "5rem" }}>
+                <StatBadge value="8 Years" label="Teaching Experience" color="bg-emerald-500/90 text-white" delay={1.4} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── STATS STRIP ── */}
+      <div className="bg-slate-950 border-y border-white/5">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/5">
+            {[
+              { value: "2,000+", label: "Students Worldwide" },
+              { value: "Band 7–9", label: "Average Score" },
+              { value: "8 Years", label: "Expert Teaching" },
+              { value: "100%", label: "Online · Global" },
+            ].map((s, i) => (
+              <motion.div key={s.label}
+                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="py-8 px-6 text-center">
+                <p className="text-3xl font-extrabold text-white mb-1">{s.value}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wider">{s.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ABOUT WAFFA ── */}
+      <section className="py-28 bg-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+            {/* Left — visual */}
+            <motion.div {...fadeUp()} className="relative">
+              <div className="absolute -inset-4 bg-blue-50 rounded-[3rem] rotate-2 -z-10" />
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-[2.5rem] p-8 text-white">
+                <div className="text-5xl mb-4">👩‍🏫</div>
+                <blockquote className="text-lg font-medium leading-relaxed italic opacity-90 mb-6">
+                  "I help students overcome language barriers — just like the ones my parents faced when they came to Canada."
+                </blockquote>
+                <div className="border-t border-white/20 pt-5 space-y-2">
+                  {[
+                    "🎓 Masters in TESL — University of Ottawa",
+                    "🇨🇦 Native English speaker · 30+ years in Canada",
+                    "📚 English Professor at top Canadian college",
+                    "⭐ 2,000+ students achieved Band 7, 8, or 9",
+                  ].map(f => (
+                    <p key={f} className="text-sm text-blue-100">{f}</p>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right — text */}
+            <div className="space-y-6">
+              <motion.div {...fadeUp(0.1)}>
+                <span className="text-blue-600 font-bold text-xs tracking-widest uppercase">Meet Your Instructor</span>
+                <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mt-3 leading-tight">
+                  Asalaamu Alaykum,<br />I'm <span className="text-blue-600">Miss Waffa!</span>
+                </h2>
+              </motion.div>
+              <motion.p {...fadeUp(0.2)} className="text-slate-500 text-lg leading-relaxed">
+                I've been teaching IELTS Speaking for 8 years. My courses are designed to quickly build your vocabulary, fluency, and confidence — so you walk into the exam ready to impress.
+              </motion.p>
+              <motion.div {...fadeUp(0.3)} className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: Mic, label: "Speaking Fluency" },
+                  { icon: BookOpen, label: "Rich Vocabulary" },
+                  { icon: Award, label: "Band 7, 8 or 9" },
+                  { icon: Globe, label: "100% Online" },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3">
+                    <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Icon className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-700">{label}</span>
+                  </div>
+                ))}
+              </motion.div>
+              <motion.div {...fadeUp(0.4)}>
+                <Link to="/contact"
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-7 py-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5">
+                  Book a Free Session <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3D COURSE FEATURES ── */}
+      <section className="py-28 bg-slate-50">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <motion.div {...fadeUp()} className="text-center mb-16">
+            <span className="text-blue-600 font-bold text-xs tracking-widest uppercase">Why Students Choose Miss Waffa</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mt-3">
+              Become Fluent in <span className="text-blue-600">7 Days</span>
+            </h2>
+            <p className="text-slate-500 mt-4 max-w-xl mx-auto">
+              No more hesitation. No more nervousness. Just results.
+            </p>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <FeatureCard icon={Zap} title="Speak Without Hesitation" delay={0}
+              desc="Master fluency techniques so English flows naturally — in the exam and in life."
+              gradient="from-blue-500 to-blue-700" />
+            <FeatureCard icon={Award} title="Score Band 7, 8, or 9" delay={0.1}
+              desc="Proven strategies used by top scorers, taught step by step by Miss Waffa."
+              gradient="from-indigo-500 to-purple-600" />
+            <FeatureCard icon={Mic} title="Perfect Pronunciation" delay={0.2}
+              desc="Sound natural and clear. Build vocabulary that examiners love to hear."
+              gradient="from-emerald-500 to-teal-600" />
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-28 bg-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <motion.div {...fadeUp()} className="text-center mb-16">
+            <span className="text-blue-600 font-bold text-xs tracking-widest uppercase">Student Results</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mt-3">
+              Real Students. Real Scores.
+            </h2>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <TestimonialCard delay={0} band="8.0" name="Sara M." country="Pakistan → Canada"
+              quote="I went from Band 6 to Band 8 in one week. Miss Waffa's techniques completely changed how I think in English." />
+            <TestimonialCard delay={0.1} band="7.5" name="Ahmed K." country="Egypt → UK"
+              quote="Her vocabulary lists and pronunciation tips were exactly what I needed. I finally stopped second-guessing myself." />
+            <TestimonialCard delay={0.2} band="9.0" name="Nadia R." country="UAE → Australia"
+              quote="I couldn't believe I scored Band 9. Miss Waffa made me realize I was capable of it all along." />
+          </div>
+        </div>
+      </section>
+
+      {/* ── BLOG PREVIEW ── */}
+      <section className="py-28 bg-slate-950 text-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <motion.div {...fadeUp()} className="flex items-end justify-between mb-14 flex-wrap gap-4">
+            <div>
+              <span className="text-blue-400 font-bold text-xs tracking-widest uppercase">Latest</span>
+              <h2 className="text-4xl font-extrabold mt-2">Speaking Tips & Insights</h2>
+            </div>
+            <Link to="/blogs" className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors text-sm">
+              View All Posts <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { cat: "Tips", title: "IELTS Speaking Tips 2026: Boost Your Band Score", excerpt: "The strategies no one tells you — straight from an IELTS expert." },
+              { cat: "Part 3", title: "Part 3 Questions 2026: How to Answer Like a Band 8", excerpt: "Analyse, justify, and discuss — here's the exact formula to use." },
+              { cat: "Vocabulary", title: "Barbecue Questions: Vocabulary & Sample Answers", excerpt: "This surprising topic hit the IELTS test recently. Here's how to ace it." },
+            ].map((blog, i) => (
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.55 }}
+                whileHover={{ y: -6 }}
+                className="bg-white/5 border border-white/10 rounded-3xl p-7 hover:bg-white/10 transition-all cursor-pointer group"
+              >
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full">
+                  {blog.cat}
+                </span>
+                <h3 className="text-white font-bold text-lg mt-4 mb-3 leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">
+                  {blog.title}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed line-clamp-2">{blog.excerpt}</p>
+                <div className="flex items-center gap-1.5 text-blue-400 text-sm font-semibold mt-5 group-hover:gap-3 transition-all">
+                  Read Article <ArrowRight className="w-4 h-4" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="relative py-32 overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white text-center">
+        <motion.div className="absolute inset-0 opacity-20"
+          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
+          style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "30px 30px" }} />
+        <motion.div {...fadeUp()} className="relative z-10 container mx-auto px-4 max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/30 bg-white/10 text-sm font-semibold mb-8">
+            <Users className="w-4 h-4" /> Join 2,000+ successful students
+          </div>
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-5 leading-tight">
+            Your Band 7+ Journey<br />Starts Today.
+          </h2>
+          <p className="text-blue-100 text-lg mb-10">
+            Stop postponing your goals. Miss Waffa has helped thousands — you're next.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/contact"
+              className="inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-bold px-10 py-4 rounded-2xl transition-all hover:shadow-2xl hover:-translate-y-1 text-lg">
+              Enroll Now <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link to="/ielts-speaking"
+              className="inline-flex items-center justify-center gap-2 border border-white/30 text-white font-semibold px-10 py-4 rounded-2xl hover:bg-white/10 transition-all text-lg">
+              View Course Details
+            </Link>
+          </div>
+          {/* mini checklist */}
+          <div className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3">
+            {["No long-term commitment", "100% online", "Results in 7 days", "Taught by a native speaker"].map(f => (
+              <span key={f} className="flex items-center gap-2 text-sm text-blue-100">
+                <CheckCircle className="w-4 h-4 text-blue-300" /> {f}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      <Footer />
+    </div>
   );
 }
